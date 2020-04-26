@@ -15,42 +15,37 @@ const edges = [
   [0, 0, 2, 0, 0, 0, 6, 7, 0]
 ];
 
-const unvisited = {}
 const distances = {}
 
-function popMinUnvisited() {
+function popWithMinDistance(queue = []) {
   let min = MAX_NUM
-  let minkey
-  for (let [key, value] of Object.entries(unvisited)) {
-    if (unvisited[key] < min) {
-      min = unvisited[key]
-      minkey = key
+  let minIndex = null
+  for (let i = 0; i < queue.length; i++) {
+    if (distances[queue[i]] < min) {
+      min = queue[i]
+      minIndex = i
     }
   }
-  delete unvisited[minkey]
-  return minkey
+  queue.splice(minIndex, 1)
+  return min
 }
 
 function calcMinDistanceFromSource(sourceV) {
-  sptArr[sourceV] = true
+  let neighbors = [sourceV]
   distances[sourceV] = 0
-  let neighbors = getNeighbors(sourceV)
-  calcNeighborsDistance(sourceV, neighbors)
-  let nextV
 
   while (Object.keys(sptArr).length < nodesLen) {
-    nextV = popMinUnvisited()
+    let nextV = popWithMinDistance(neighbors)
     sptArr[nextV] = true
-    neighbors = getNeighbors(nextV)
+    neighbors = getNeighbors(nextV, neighbors)
     calcNeighborsDistance(nextV, neighbors)
   }
 }
 
-function getNeighbors(vertex) {
+function getNeighbors(vertex, neighbors) {
  const edgesInVertex = edges[vertex]
- const neighbors = []
   for (let i = 0; i < edgesInVertex.length; i++) {
-    if (!sptArr[i] && edgesInVertex[i] > 0) {
+    if (!sptArr[i] && edgesInVertex[i] > 0 && !neighbors.includes(i)) {
       neighbors.push(i)
     }
   }
@@ -61,19 +56,16 @@ function calcNeighborsDistance(sourceV, neighbors) {
   for (const neighbor of neighbors) {
     if (!sptArr[neighbor]) {
       const edgeVal = edges[sourceV][neighbor]
-      const newDist = (distances[sourceV] || 0) + edgeVal
+      const newDist = edgeVal > 0 ? distances[sourceV] + edgeVal : MAX_NUM
       if (!distances[neighbor] || newDist < distances[neighbor]) {
         distances[neighbor] = newDist
-        unvisited[neighbor] = newDist
       }
     }
   }
 }
 
 calcMinDistanceFromSource(0)
-// console.log(getNeighbors(1))
 // calcNeighborsDistance(0, [1,7])
-// popMinUnvisited()
 // calcNeighborsDistance(1, [2,7,0])
 // unvisited
 distances
