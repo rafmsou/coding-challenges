@@ -19,8 +19,9 @@ return 124 (99 + 25) as:
 4 -> 2 -> 1
 """
 
+
 class Node:
-    def __init__(self, val, next=None):
+    def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
 
@@ -31,6 +32,7 @@ class Node:
             nodes.append(str(cur_node.next.val))
             cur_node = cur_node.next
         return '->'.join(nodes)
+
 
 def list_len(linked_list):
     if linked_list == None:
@@ -50,25 +52,17 @@ def sum_linked_lists(head1, head2):
         head1 = head2
         head2 = temp
 
-    cur_sum = head1.val + head2.val
-    headsum = Node(cur_sum % 10)
+    cur_sum = 0
+    headsum = Node(0)
     tempsum = headsum
-    carry = 0 if (cur_sum) < 10 else 1
 
-    while head2.next != None:
-        cur_sum = head1.next.val + head2.next.val + carry
-        tempsum.next = Node(cur_sum % 10)
+    # head1 is always bigger or equal to head2 length
+    while head1 != None:
         carry = 0 if (cur_sum) < 10 else 1
-        head1 = head1.next
-        head2 = head2.next
-        tempsum = tempsum.next
-
-    # add remaining items from head1 (if bigger list)
-    while head1.next != None:
-        cur_sum = head1.next.val + carry
+        cur_sum = head1.val + head2.val + carry
         tempsum.next = Node(cur_sum % 10)
-        carry = 0 if (cur_sum) < 10 else 1
         head1 = head1.next
+        head2 = head2.next if head2.next != None else Node(0)
         tempsum = tempsum.next
 
     if carry > 0:
@@ -83,4 +77,4 @@ def sum_linked_lists(head1, head2):
 # Lists of different sizes
 head1 = Node(8, Node(4, Node(6)))
 head2 = Node(5, Node(6, Node(3, Node(0, Node(1)))))
-print(sum_linked_lists(head1, head2))
+print(sum_linked_lists(head1, head2).next)
